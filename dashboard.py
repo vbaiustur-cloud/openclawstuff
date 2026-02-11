@@ -3,7 +3,6 @@
 OpenClaw Dashboard - Live status + Agent terminal (Rich TUI)
 """
 
-import json
 import os
 import subprocess
 import sys
@@ -21,13 +20,9 @@ from rich import box
 
 console = Console()
 
-# Gateway config
-GATEWAY_URL = "http://127.0.0.1:18789"
-GATEWAY_TOKEN = "426bd00ce05ba8c81f842cc400789b254aca7b31755541fe"
-HEADERS = {
-    "Authorization": f"Bearer {GATEWAY_TOKEN}",
-    "Content-Type": "application/json"
-}
+# Gateway config - use environment variable
+GATEWAY_URL = os.environ.get("OPENCLAW_GATEWAY_URL", "http://127.0.0.1:18789")
+GATEWAY_TOKEN = os.environ.get("OPENCLAW_GATEWAY_TOKEN", "")
 
 # To-Do storage
 TODO_FILE = Path.home() / ".openclaw" / "dashboard-todos.json"
@@ -48,23 +43,29 @@ def save_todos(todos):
 
 
 class GatewayClient:
+    def _headers(self):
+        token = os.environ.get("OPENCLAW_GATEWAY_TOKEN", "")
+        if token:
+            return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+        return {"Content-Type": "application/json"}
+    
     def get_status(self):
         try:
-            r = requests.get(f"{GATEWAY_URL}/status", headers=HEADERS, timeout=2)
+            r = requests.get(f"{GATEWAY_URL}/status", headers=self._headers(), timeout=2)
             return r.json() if r.status_code == 200 else {}
         except:
             return {}
 
     def get_agents(self):
         try:
-            r = requests.get(f"{GATEWAY_URL}/agents/list", headers=HEADERS, timeout=2)
+            r = requests.get(f"{GATEWAY_URL}/agents/list", headers=self._headers(), timeout=2)
             return r.json().get("agents", []) if r.status_code == 200 else []
         except:
             return []
 
     def get_crons(self):
         try:
-            r = requests.get(f"{GATEWAY_URL}/cron/list", headers=HEADERS, timeout=2)
+            r = requests.get(f"{GATEWAY_URL}/cron/list", headers=self._headers(), timeout=2)
             return r.json().get("jobs", []) if r.status_code == 200 else []
         except:
             return []
@@ -73,7 +74,7 @@ class GatewayClient:
         try:
             r = requests.post(
                 f"{GATEWAY_URL}/sessions/{session_key}/send",
-                headers=HEADERS,
+                headers=self._headers(),
                 json={"message": message},
                 timeout=5
             )
