@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=OpenClaw Dashboard
+Comment=Live OpenClaw status and agent terminal
+Exec=/home/vbai/openclaw-dashboard/run-dashboard.sh
+Icon=utilities-terminal
+Terminal=true
+Type=Application
+Categories=System;TerminalEmulator;
+StartupNotify=true
