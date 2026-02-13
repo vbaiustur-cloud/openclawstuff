@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #58a6ff; margin-bottom: 10px; }
+        h2 { color: #8b949e; margin: 30px 0 15px; font-size: 1.2rem; }
+        .status-banner { background: #238636; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
+        .status-banner.warning { background: #d29922; color: #000; }
+        .status-banner.error { background: #f85149; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; }
+        .card h3 { color: #58a6ff; margin-bottom: 10px; }
+        .card .status { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+        .status.ok { background: #238636; color: white; }
+        .status.warning { background: #d29922; color: #000; }
+        .status.error { background: #f85149; color: white; }
+        .model-tag { background: #21262d; padding: 5px 10px; border-radius: 4px; font-family: monospace; font-size: 0.85rem; display: inline-block; margin: 5px 5px 5px 0; }
+        .model-tag.primary { border: 1px solid #58a6ff; color: #58a6ff; }
+        .model-list { margin-top: 15px; }
+        .model-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #21262d; margin-bottom: 8px; border-radius: 6px; }
+        .model-item .name { font-weight: bold; }
+        .model-item .size { color: #8b949e; font-size: 0.85rem; }
+        .model-item .status-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 10px; }
+        .model-item .status-dot.ok { background: #238636; }
+        .model-item .status-dot.warning { background: #d29922; }
+        .channel-badge { display: inline-flex; align-items: center; gap: 5px; background: #21262d; padding: 8px 12px; border-radius: 6px; margin: 5px; }
+        .section { margin-bottom: 40px; }
+        code { background: #21262d; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+        .cost { font-size: 2rem; font-weight: bold; color: #238636; }
+        .cost span { font-size: 1rem; color: #8b949e; font-weight: normal; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 OpenClaw Dashboard</h1>
+        <p>Local-first, token-free automation</p>
+
+        <div class="status-banner">
+            <span>✅</span>
+            <div>
+                <strong>All Systems Operational</strong>
+                <div style="opacity: 0.8; font-size: 0.9rem;">Gateway running • Telegram connected • Local models active</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💰 Cloud Spend</h2>
+            <div class="card">
+                <div class="cost">$0 <span>/ month</span></div>
+                <p style="color: #8b949e; margin-top: 10px;">Using local Ollama models only</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🤖 Agents</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Main Chat</h3>
+                    <span class="status ok">Active</span>
+                    <p style="margin-top: 15px;">Primary assistant - your main interface</p>
+                    <div style="margin-top: 15px;">
+                        <span class="model-tag primary">ollama/qwen2.5:1.5b</span>
+                        <span class="model-tag">ollama/llama3.1:8b</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Holosim Play</h3>
+                    <span class="status warning">Needs Browser</span>
+                    <p style="margin-top: 15px;">Game automation agent</p>
+                    <div style="margin-top: 15px;">
+                        <span class="model-tag">ollama/qwen2.5:1.5b</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>GameDev</h3>
+                    <span class="status ok">Ready</span>
+                    <p style="margin-top: 15px;">Star Atlas sidescroller development</p>
+                    <div style="margin-top: 15px;">
+                        <span class="model-tag">ollama/llama3.1:8b</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Game Tester</h3>
+                    <span class="status warning">On-Demand</span>
+                    <p style="margin-top: 15px;">Playtesting builds</p>
+                    <div style="margin-top: 15px;">
+                        <span class="model-tag">ollama/qwen2.5:1.5b</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Twitter Agent</h3>
+                    <span class="status ok">Scheduled</span>
+                    <p style="margin-top: 15px;">Daily 09:00 - Star Atlas TV tweets</p>
+                    <div style="margin-top: 15px;">
+                        <span class="model-tag">ollama/qwen2.5:1.5b</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🖥️ Local Models (Ollama)</h2>
+            <div class="model-list">
+                <div class="model-item">
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-dot ok"></span>
+                        <span class="name">qwen2.5:1.5b</span>
+                    </div>
+                    <span class="size">986 MB</span>
+                    <span class="model-tag primary" style="margin-left: 10px;">Primary</span>
+                </div>
+                <div class="model-item">
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-dot ok"></span>
+                        <span class="name">llama3.1:8b</span>
+                    </div>
+                    <span class="size">4.9 GB</span>
+                    <span class="model-tag" style="margin-left: 10px;">Fallback</span>
+                </div>
+                <div class="model-item">
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-dot ok"></span>
+                        <span class="name">lfm2.5-thinking:latest</span>
+                    </div>
+                    <span class="size">731 MB</span>
+                    <span class="model-tag" style="margin-left: 10px;">Thinking</span>
+                </div>
+                <div class="model-item">
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-dot warning"></span>
+                        <span class="name">qwen2.5:7b-instruct</span>
+                    </div>
+                    <span class="size">4.7 GB</span>
+                    <span class="model-tag warning" style="margin-left: 10px;">Verify</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📡 Channels</h2>
+            <div>
+                <div class="channel-badge">
+                    <span>✅</span>
+                    <span>Telegram - @vbassistanthelper_bot</span>
+                </div>
+                <div class="channel-badge">
+                    <span>✅</span>
+                    <span>WebChat - Main Session</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Quick Commands</h2>
+            <div class="card">
+                <code>openclaw health</code> - Check system status<br>
+                <code>openclaw agents list</code> - List all agents<br>
+                <code>ollama list</code> - List local models<br>
+                <code>openclaw message send --channel telegram --target @odvb77 --message "Test"</code> - Send Telegram test
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🐳 Docker Status</h2>
+            <div class="card">
+                <span class="status warning">Permission Fixed</span>
+                <p style="margin-top: 15px; color: #8b949e;">Run <code>newgrp docker</code> or logout/login to apply Docker group membership</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

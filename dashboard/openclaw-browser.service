@@ -1,0 +1,26 @@
+[Unit]
+Description=OpenClaw Browser Service
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=vbai
+WorkingDirectory=/home/vbai/.openclaw/workspace/dashboard
+ExecStart=/home/vbai/.openclaw/workspace/dashboard/browser-launcher.sh
+Restart=always
+RestartSec=10
+Environment=DISPLAY=:0
+Environment=HOME=/home/vbai
+
+# Resource limits
+MemoryMax=2G
+CPUQuota=80%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=openclaw-browser
+
+[Install]
+WantedBy=multi-user.target
