@@ -280,3 +280,131 @@ python3 src/pipeline_run.py           # Run pipeline
 - Uses local qwen2.5:1.5b model (cost-free, no cloud dependency)
 - Browser posting assumes existing X session (cookies valid)
 - API mode requires: X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_SECRET
+
+## 2026-02-14 - Xvfb Browser Solution
+
+### Problem
+Browser posting was failing with "browser_session_invalid" on headless SSH server.
+
+### Solution Implemented
+Added `get_browser_command()` in `/home/vbai/openclaw_unified/apps/bots/tweet-pipeline/src/post/post_browser.py`:
+```python
+def get_browser_command():
+    """Returns browser command with xvfb-run for headless servers."""
+    if os.environ.get('DISPLAY'):
+        return "chromium --user-data-dir=/home/vbai/.openclaw/browser_profiles/x/Default --profile-directory=Default"
+    return "xvfb-run -a chromium --user-data-dir=/home/vbai/.openclaw/browser_profiles/x/Default --profile-directory=Default"
+```
+
+### Persistent Profile
+- Location: `/home/vbai/.openclaw/browser_profiles/x/Default`
+- Xvfb available: `/usr/bin/xvfb-run`
+
+### Test Results
+- Chromium + xvfb-run successfully loads x.com
+- Full HTML DOM fetched ✓
+- Session detection working (shows `isLoggedIn:false`)
+- Browser works, needs login cookies to post
+
+### To Enable Posting
+1. Manual login: `xvfb-run -a chromium --user-data-dir=/home/vbai/.openclaw/browser_profiles/x/Default https://x.com`
+2. Pipeline will auto-use cookies after login
+
+---
+
+## 2026-02-14 - Comprehensive System Audit
+
+### Audit Summary
+**System Health Score: 7.5/10** (improved from 7/10)
+
+### Key Findings
+
+#### Projects Discovered (16 total)
+| Category | Count | Notable |
+|----------|-------|---------|
+| Core Systems | 5 | Gateway, v2, Dashboards (V1/V2), Unified Apps |
+| Star Atlas Ecosystem | 8 | Tweet Pipeline, Fleet Alerts, Portfolio, Trading Bot, SAGE, Holosim |
+| Utility | 3 | Browser Runner, Multi-API, Token Saver |
+
+#### Agents (22 Total)
+- **Primary (5):** main, agent-qwen, agent-llama, agent-thinking, agent-repair
+- **Domain (7):** holosim-agent, game-tester-agent, ollama-test-agent, communications-agent, news-agent, research-agent, project-manager
+- **Utility (10):** discord-portfolio, home-automation, knowledge-base, meeting-notes, video-highlights, agent-gemini, agent-grok, game-tester, +2 more
+
+#### Bots & Pipelines
+| Bot | Status | Next Step |
+|-----|--------|-----------|
+| **Tweet Pipeline** | 95% complete | Needs X login |
+| **Fleet Alerts** | 50% | SAGE API integration |
+| **Portfolio Tracker** | 40% | RPC/SDK integration |
+| **Trading Bot** | 20% | Full implementation |
+
+#### Integrations Status
+| Integration | Status | Notes |
+|------------|--------|-------|
+| MiniMax | ✅ Working | Primary cloud model |
+| Ollama | ✅ Working | 4 local models |
+| Groq | ✅ Working | Llama 4 Scout |
+| Gemini | ⚠️ Key exists | Not integrated into fallback |
+| Telegram | ✅ Working | Bot connected |
+| GitHub | ✅ Skills available | 2 repos configured |
+| Solana | ✅ Skill | Full wallet tracking |
+| Star Atlas/SAGE | ✅ Complete | Fleet tracking + analytics |
+| X/Twitter | ⚠️ Profile exists | Not logged in |
+
+#### Broken/Blocked Items
+| Issue | Severity | Resolution |
+|-------|----------|------------|
+| Holosim watchdog cron | Medium | "delivery target missing" - config fix |
+| Memory search (embeddings) | Low | OpenAI 401 - embeddings disabled |
+| Tweet pipeline posting | High | No X session - manual login needed |
+
+#### Missing Credentials
+- **X/Twitter cookies** - For tweet pipeline browser posting
+- **Twitter API keys** - Alternative to browser posting
+- **Star Atlas SAGE API key** - For fleet alerts
+- **Solana RPC endpoint** - For portfolio tracker
+
+### Working Today
+- ✅ OpenClaw main agent (MiniMax-M2.1)
+- ✅ All 4 local Ollama models
+- ✅ Telegram messaging
+- ✅ Free web search (6 sources)
+- ✅ Dashboard V2
+- ✅ Tweet pipeline code
+- ✅ Browser automation (Playwright)
+- ✅ Star Atlas/SAGE API integration
+- ✅ Solana skill
+
+### Paused Systems (External Dependencies)
+- **Holosim Agent & Crons** - Game pre-launch (no active season)
+- **Fleet Alerts** - Waiting on SAGE API credentials
+- **Portfolio Tracker** - Waiting on RPC/SDK integration
+
+### Immediate Action Items
+1. **Login to X/Twitter** - Manual browser login to establish session
+2. **Fix Holosim cron** - Gateway config delivery target fix
+3. **Test tweet pipeline** - Dry run first
+
+### Week Goals
+1. Get X/Twitter posting working
+2. Integrate Gemini into multi-api fallback
+3. Complete Fleet Alerts SAGE integration
+4. Archive old unused workspaces
+
+### Infrastructure Notes
+- **Total Agents:** 22 configured
+- **Workspaces:** 12 active
+- **Skills:** 14 installed
+- **Cron Jobs:** 4 (3 disabled, 1 error)
+- **Systemd Services:** 2 (gateway, discord)
+
+### User Preferences (Reaffirmed)
+- Cost-free operation priority
+- Local AI (Ollama) preferred when available
+- Ask before making system changes
+- Stability over new features
+
+---
+
+**Last Audit:** 2026-02-14 18:57 GMT+1
