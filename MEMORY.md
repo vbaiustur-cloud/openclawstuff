@@ -223,3 +223,60 @@ python3 ~/.openclaw/skills/browser-runner/browser.py fill '{"#email": "test"}'
 - OpenClaw web interface bound to localhost only
 - PC access requires SSH tunnel or use TUI (`openclaw`)
 - User using TUI/webchat instead
+
+---
+
+## 2026-02-14 - StarAtlasTV Tweet Pipeline
+
+### New Project Created
+Built complete automated tweet pipeline for Star Atlas + Z.ink content promotion.
+
+**Location:** `/home/vbai/openclaw_unified/apps/bots/tweet-pipeline/`
+
+### Features
+- Ingests from YouTube (@staratlastv) + Aephia blog
+- Hybrid spellcheck (dictionary + LLM for corrections)
+- Fact extraction using local qwen2.5:1.5b model
+- Human-like tweet generation (not hypey/robotic)
+- Relevance gate: must mention Star Atlas/Z.ink
+- Deduplication: 48-hour window
+- Browser posting via existing browser-runner skill
+- API posting stub for future Twitter API integration
+
+### Configuration (`config/pipeline.yaml`)
+```yaml
+mode: "auto"        # "auto" posts, "draft" saves only
+post_method: "browser"  # "browser" or "api"
+interval_hours: 3
+required_terms_any: ["Star Atlas","StarAtlas","Z.ink","z.ink"]
+spellcheck:
+  enabled: true
+  strategy: "hybrid"
+```
+
+### Commands
+```bash
+cd /home/vbai/openclaw_unified/apps/bots/tweet-pipeline
+pip install -r requirements.txt
+python3 src/pipeline_run.py --dry-run  # Test without posting
+python3 src/pipeline_run.py           # Run pipeline
+
+# Add to crontab
+0 */3 * * * cd /home/vbai/openclaw_unified/apps/bots/tweet-pipeline && \
+  /usr/bin/python3 src/pipeline_run.py >> \
+  /home/vbai/openclaw_unified/ops/logs/tweet-pipeline.log 2>&1
+```
+
+### Output Locations
+- `data/drafts/` - Draft tweets
+- `data/sent/` - Posted tweets
+- `data/failed/` - Failed attempts
+- `data/state/status.json` - Dashboard status
+
+### Tests
+16 smoke tests created, all passing (normalize, spellcheck, dedupe, relevance, config).
+
+### Key Design Decisions
+- Uses local qwen2.5:1.5b model (cost-free, no cloud dependency)
+- Browser posting assumes existing X session (cookies valid)
+- API mode requires: X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_SECRET
