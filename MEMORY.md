@@ -408,3 +408,273 @@ def get_browser_command():
 ---
 
 **Last Audit:** 2026-02-14 18:57 GMT+1
+
+## 2026-02-14 - SAIP Phase 2A Complete
+
+### Research Documentation Created
+
+**Phase 2A deliverables:**
+- `~/.openclaw/projects/saip/docs/sage_account_schema.md` (14.2 KB)
+  - 22 account types with full Borsh data layouts
+  - Includes: fleet, fleetShips, sagePlayerProfile, game, gameState, sector, star, planet, starbase, resource, craftingInstance, etc.
+  - Each account: discriminator, version, owner, fields, update triggers, gameplay meaning, persistence
+
+- `~/.openclaw/projects/saip/docs/sage_instruction_map.md` (20.2 KB)
+  - 121 SAGE instructions mapped and categorized
+  - Categories: FLEET (18), MINING (6), MOVEMENT (8), CARGO (12), CRAFTING (12), COMBAT (8), REGISTRATION (20), MANAGEMENT (25), ADMIN (12)
+  - Each instruction: affected accounts, input args, state transitions, extracted data format
+
+### Key Data Extracted
+- **Source IDL**: `~/.openclaw/skills/staratlas/sage-project/sage-idl.json`
+- **Accounts**: 22 documentable types
+- **Instructions**: 121 mappable operations
+- **Type Definitions**: 137 enums/structs
+
+### Transaction Types Parseable
+- MINING: startMiningAsteroid, mineAsteroidToRespawn
+- MOVEMENT: warpToCoordinate, warpLane, startSubwarp
+- CARGO: depositCargoToFleet, withdrawCargoFromFleet
+- CRAFTING: createCraftingProcess, claimCraftingOutputs
+- COMBAT: attackFleet, attackStarbase
+- FLEET: createFleet, disbandFleet, addShipToFleet
+
+### SAIP Documentation Status
+**Total: 13 files, ~180 KB** in `~/.openclaw/projects/saip/docs/`
+
+### Ready for Phase 2B
+Decoder/parser skills can now be implemented using the documented schemas and instruction maps.
+
+---
+
+## 2026-02-14 - SAIP Ecosystem Research Agent Created
+
+### New Project: `~/.openclaw/projects/saip-researcher/`
+
+**Purpose:** Independent intelligence gathering on Star Atlas ecosystem
+
+**Responsibilities:**
+- Monitor GitHub for SAGE SDKs, parsers, decoders, dashboards
+- Track official Star Atlas developer updates
+- Check RPC provider availability
+- Detect SAGE schema and program ID changes
+
+**Outputs:**
+- `weekly_research_report.md` - Comprehensive summary
+- `new_tools_found.md` - Discovered tools
+- `rpc_provider_list.json` - Provider status
+- `sage_schema_changes.json` - Schema changes
+
+**Independence Guarantee:**
+- ❌ NO local staratlas_skill usage
+- ❌ NO cached project data
+- ❌ NO solana_skill logic
+- ✅ ONLY external public sources
+
+**Schedule:** Daily at 2:00 AM via cron
+
+**Files Created:**
+- `src/researcher.py` - Main agent (220 lines)
+- `config/research_config.yaml` - Configuration
+- `README.md` - Documentation
+- `reports/` - Output directory with 4 report files
+
+**Test Run:** ✅ Successfully completed (19 findings)
+
+---
+
+## 2026-02-14 - SAIP Ecosystem Research Agent v2.0 Created
+
+### New Project: `~/.openclaw/projects/saip-ecosystem-research-agent/`
+
+**Purpose:** Comprehensive browser-enabled ecosystem monitoring with change detection
+
+**Key Features:**
+- Browser automation via `browser_runner` for dynamic content
+- Source registry (17 sources): GitHub, docs, blogs, dashboards, RPC, RSS
+- Content hashing (SHA-256) for change detection
+- Semantic diff classification into 6 types
+- Snapshot storage (last 3 per source)
+- Research memory store (weekly JSON)
+- Immediate alerting for critical changes
+
+**Change Classification:**
+| Type | Description | Severity |
+|------|-------------|----------|
+| `breaking_change` | Breaking API/schema | Critical |
+| `tooling_release` | New tools/releases | High |
+| `infra_update` | RPC/infrastructure | Medium |
+| `program_schema_change` | SAGE changes | Critical |
+| `migration_related` | Zink news | High |
+| `automation_related` | Frameworks | Medium |
+
+**Outputs Generated:**
+- `reports/ecosystem_weekly.md` - Weekly summary
+- `reports/tooling_landscape.md` - Tool releases
+- `reports/rpc_changes.json` - RPC updates
+- `reports/sdk_change_log.md` - SDK changes
+- `reports/migration_watch.md` - Migration alerts
+
+**Isolation (STRICT):**
+- ❌ NO staratlas_skill imports
+- ❌ NO solana_skill interaction
+- ❌ NO SAGE account reading
+- ✅ ONLY external public sources
+
+**Schedule:**
+- Full scan: Daily 2:00 AM (`--mode full`)
+- GitHub commits: Hourly (`--mode lightweight`)
+
+**Files Created:**
+- `src/ecosystem_agent.py` - Main agent (500+ lines)
+- `config/source_registry.yaml` - 17 sources
+- `config/agent_config.yaml` - Agent settings
+- `README.md` - Documentation
+
+**Test Run:** ✅ Full mode completed, 5 reports generated
+
+**Last Update:** 2026-02-14 20:50 GMT+1
+
+---
+
+## 2026-02-14 - SAGE Account Decoder Skill Created
+
+### New Skill: `~/.openclaw/skills/sage_account_decoder/`
+
+**Purpose:** Decode SAGE on-chain accounts into structured JSON objects
+
+**Type:** Stateless & Deterministic Decoder
+
+**Features:**
+- Decodes all 21 SAGE account types
+- Auto-detects account type from 8-byte discriminator
+- Parses binary Borsh layout into JSON
+- Maps enums to readable names (StarType, PlanetType, etc.)
+- Validates struct lengths
+- Gracefully rejects unknown types
+
+**Supported Account Types:**
+- `fleet` - Fleet configuration
+- `fleetShips` - Individual ships
+- `sagePlayerProfile` - Player identity
+- `game`, `gameState` - Game config/state
+- `sector`, `star`, `planet` - Locations
+- `starbase`, `starbasePlayer` - Starbase data
+- `resource`, `mineItem` - Resources
+- `ship` - Ship templates
+- `craftingInstance` - Crafting processes
+- `surveyDataUnitTracker` - Scanning
+- Plus: `loot`, `disbandedFleet`, `playerCrewRecord`, `combatConfig`, `progressionConfig`, `sageCrewConfig`
+
+**Output Format:**
+```json
+{
+  "accountType": "fleet",
+  "publicKey": "...",
+  "programId": "SAGE",
+  "slot": 221928201,
+  "decoded": {
+    "owner": "...",
+    "name": "My Fleet",
+    "shipCount": 5,
+    "cargo": { "fuel": 1000, "food": 500, "arms": 250, "components": 100 }
+  },
+  "timestamp": "2026-02-14T20:50:00.000000"
+}
+```
+
+**Convenience Functions:**
+- `decode_fleet_account()`
+- `decode_starbase_account()`
+- `decode_planet_account()`
+- `decode_ship_account()`
+- `decode_resource_account()`
+- `decode_crafting_instance()`
+- `decode_survey_tracker()`
+
+**Files Created:**
+- `src/decoder.py` - Main decoder (400+ lines)
+- `tests/test_decoder.py` - 12 unit tests ✅
+- `data/discriminators.json` - Discriminator registry
+- `SKILL.md` - Full documentation
+- `README.md` - Quick reference
+
+**Test Results:** 12/12 passing ✅
+
+**Isolation Rules (STRICT):**
+- ❌ NO fetching transactions
+- ❌ NO classifying instructions
+- ✅ ONLY decode provided binary data
+- ✅ Stateless & deterministic
+
+**Used By:** SAGE Indexer (Phase 4), Fleet Analytics
+
+**Last Update:** 2026-02-14 21:00 GMT+1
+
+---
+
+## 2026-02-14 - Solana RPC Manager Skill Created
+
+### New Skill: `~/.openclaw/skills/saip/solana_rpc_manager/`
+
+**Purpose:** Fault-tolerant free RPC provider layer for SAIP
+
+**Type:** Infrastructure Layer
+
+**Features:**
+- Provider registry (8 providers, 4 free)
+- Health tracking with persistence (`data/provider_health.json`)
+- Auto failover across providers
+- Quarantine system (30 min on 3 timeouts/5min)
+- Latency-based provider selection
+- Retry logic (max 3 attempts)
+
+**Provider Registry:**
+| Provider | Endpoint | Free | Priority |
+|----------|----------|------|----------|
+| Solana Mainnet | api.mainnet-beta.solana.com | ✅ | 1 |
+| Ankr | rpc.ankr.com/solana | ✅ | 2 |
+| Synergy | solana-api.projectserum.com | ✅ | 3 |
+| Triton | solana-api.mcf.rocks | ✅ | 4 |
+| QuickNode | quicknode.com/endpoints | ❌ | 10 |
+| Alchemy | alchemy.com/v2/... | ❌ | 11 |
+
+**Core Functions:**
+- `get_active_provider(network="mainnet")` - Get healthy provider
+- `rpc_call(method, params, network)` - Make RPC call with retry
+- `test_all_providers(network)` - Test all providers
+- `get_health_summary(name, network)` - Health metrics
+- `is_quarantined(name, network)` - Quarantine check
+
+**Output Format:**
+```json
+{
+  "provider": "Solana Mainnet",
+  "latency_ms": 412.5,
+  "success": true,
+  "result": {...}
+}
+```
+
+**Files Created:**
+- `src/provider_registry.py` - Provider config loader
+- `src/health_tracker.py` - Health metrics & quarantine
+- `src/rpc_manager.py` - Main RPC logic
+- `config/providers.yaml` - Provider registry
+- `tests/test_rpc_manager.py` - 16 unit tests
+- `README.md` - Documentation
+
+**Test Results:** 16/16 passing ✅
+
+**Quick Test:**
+- Working: Solana Mainnet (~418ms)
+- Failed: Ankr (403), Synergy (timeout), Triton (DNS)
+
+**Isolation Rules (STRICT):**
+- ❌ NO account decoding
+- ❌ NO transaction parsing
+- ❌ NO staratlas_skill access
+- ✅ ONLY RPC infrastructure layer
+
+**Used By:** Future indexers, SAGE/Holosim data access
+
+**Last Update:** 2026-02-14 21:30 GMT+1
